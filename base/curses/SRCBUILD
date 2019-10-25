@@ -1,0 +1,23 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+release=1
+version=0.3.1
+description="libcurses and dependencies taken from netbsd and brought into a portable shape"
+depends=('musl')
+sources=("https://github.com/sabotage-linux/netbsd-curses/archive/v$version.tar.gz")
+
+src_prepare() {
+    cd "$SOURCE_DIR/netbsd-curses-$version"
+    sed 's|bin/sh|bin/bash|g' -i install.sh
+}
+
+
+src_compile() {
+    cd "$SOURCE_DIR/netbsd-curses-$version"
+    make PREFIX=/usr LIBDIR=/lib
+}
+
+src_install() {
+    cd "$SOURCE_DIR/netbsd-curses-$version"
+    make PREFIX=/usr LIBDIR=/lib DESTDIR="$INSTALL_DIR" install
+}

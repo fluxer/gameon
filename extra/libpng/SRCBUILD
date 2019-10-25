@@ -1,0 +1,29 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/general/libpng.html
+# http://downloads.sf.net/libpng-apng/libpng-1.6.28-apng.patch.gz
+
+release=1
+version=1.6.37
+description="Libraries for reading and writing PNG files"
+depends=('bash' 'zlib')
+sources=("http://download.sf.net/libpng/libpng16/$version/libpng-$version.tar.xz"
+        "http://download.sf.net/apng/libpng16/libpng-$version-apng.patch.gz")
+
+src_prepare() {
+    cd "$SOURCE_DIR/libpng-$version"
+    patch -Nup0 -i "$SOURCE_DIR/libpng-$version-apng.patch"
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/libpng-$version"
+
+    ./configure --prefix=/usr \
+        --disable-static
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/libpng-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

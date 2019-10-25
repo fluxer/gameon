@@ -1,0 +1,29 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/postlfs/gnutls.html
+
+version=3.6.10
+release=1
+description="A library which provides a secure layer over a reliable transport layer"
+depends=('gcc' 'readline' 'zlib' 'nettle')
+sources=("https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/gnutls-$version.tar.xz")
+
+src_compile() {
+    cd "$SOURCE_DIR/gnutls-$version"
+
+    ./configure --prefix=/usr \
+        --with-default-trust-store-file=/etc/ssl/cacert.pem \
+        --with-zlib \
+        --without-p11-kit \
+        --with-included-unistring \
+        --with-included-libtasn1 \
+        --disable-static \
+        --disable-guile \
+        --disable-nls
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/gnutls-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

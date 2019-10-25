@@ -1,0 +1,20 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+release=1
+version=4.4
+description="Highly compressed read-only filesystem for Linux"
+depends=('zlib' 'xz')
+sources=("http://downloads.sf.net/squashfs/squashfs$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/squashfs$version/squashfs-tools"
+
+    make XZ_SUPPORT=1 LZMA_XZ_SUPPORT=1 LZO_SUPPORT=0 LZ4_SUPPORT=0
+}
+
+src_install() {
+    cd "$SOURCE_DIR/squashfs$version/squashfs-tools"
+
+    install -vDm755 mksquashfs "$INSTALL_DIR/sbin/mksquashfs"
+    install -vm755 unsquashfs "$INSTALL_DIR/sbin/unsquashfs"
+}

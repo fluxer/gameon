@@ -1,0 +1,35 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+version=0.176
+release=1
+description="Utilities to handle ELF object files and DWARF debugging information"
+depends=('gcc' 'zlib' 'bzip2' 'xz' 'argp-standalone' 'fts-standalone' 'obstack-standalone')
+sources=("https://sourceware.org/elfutils/ftp/$version/elfutils-$version.tar.bz2"
+        'elfutils-0.176-portability-fixes.patch')
+
+src_prepare() {
+    cd "$SOURCE_DIR/elfutils-$version"
+
+    patch -Np1 -i ../elfutils-0.176-portability-fixes.patch
+    autoreconf -fi
+
+    # https://sourceware.org/PR23914
+    sed -i 's|-Werror||' */Makefile.in
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/elfutils-$version"
+
+    ./configure --prefix=/usr \
+        --program-prefix="eu-" \
+        --disable-nls \
+        --disable-symbol-versioning \
+        --disable-textrelcheck
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/elfutils-$version"
+
+    make DESTDIR="$INSTALL_DIR" install
+}

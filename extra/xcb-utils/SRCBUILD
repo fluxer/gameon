@@ -1,0 +1,48 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/x/xcb-util.html
+
+version=1.20.5
+release=1
+description="XCB utility functions"
+depends=('xorg-libraries')
+makedepends=('xorg-protocols' 'xorg-makeutils')
+sources=("http://xorg.freedesktop.org/releases/individual/xcb/xcb-util-0.4.0.tar.bz2"
+        "http://xcb.freedesktop.org/dist/xcb-util-image-0.4.0.tar.bz2"
+        "http://xcb.freedesktop.org/dist/xcb-util-keysyms-0.4.0.tar.bz2"
+        "http://xcb.freedesktop.org/dist/xcb-util-renderutil-0.3.9.tar.bz2"
+        "http://xcb.freedesktop.org/dist/xcb-util-wm-0.4.1.tar.bz2")
+
+src_compile() {
+    # bootstrapping requires local installation
+    if [ ! -d "/var/local/spm/xcb-utils" ];then
+        echo "Installing xcb-util (local)..."
+        cd "$SOURCE_DIR/xcb-util-0.4.0"
+        ./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --localstatedir=/var \
+            --disable-static
+        make install
+    fi
+
+    _packages=$(find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d)
+    for _pkg in $_packages;do
+        cd "$_pkg"
+        echo "Configuring $_pkg..."
+        ./configure --prefix=/usr \
+            --sysconfdir=/etc \
+            --localstatedir=/var \
+            --disable-static
+        echo "Compiling $_pkg..."
+        make
+    done
+}
+
+src_install() {
+    _packages=$(find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d)
+    for _pkg in $_packages;do
+        cd "$_pkg"
+        echo "Installing $_pkg (package)..."
+        make DESTDIR="$INSTALL_DIR" install
+    done
+}

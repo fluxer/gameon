@@ -1,0 +1,26 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+arch=('i686' 'x86_64')
+pkgname=ninja
+version=1.9.0
+release=1
+description="Small build system with a focus on speed"
+depends=('gcc')
+makedepends=('python2')
+sources=("https://github.com/martine/ninja/archive/v$version.zip"
+        'fix-musl.patch')
+
+src_prepare() {
+    cd "$SOURCE_DIR/ninja-$version"
+    patch -Np1 -i ../fix-musl.patch
+}
+
+src_compile() {
+    cd ninja-$version
+    python2 configure.py --bootstrap
+}
+
+src_install() {
+    cd "$SOURCE_DIR/ninja-$version"
+    install -m755 -D ninja "$INSTALL_DIR/usr/bin/ninja"
+}

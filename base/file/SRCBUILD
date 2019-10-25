@@ -1,0 +1,22 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/file.html
+
+release=1
+version=5.37
+description="File type identification utility"
+depends=('zlib' 'musl')
+sources=("ftp://ftp.astron.com/pub/file/file-$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/file-$version"
+
+    ./configure --prefix=/usr
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/file-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}
+

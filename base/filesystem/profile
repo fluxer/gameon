@@ -1,0 +1,58 @@
+# Begin /etc/profile
+
+# System wide environment variables and startup programs.
+
+# Set the initial path
+export PATH="/bin:/usr/bin:/usr/local/bin"
+
+# Set the effective user ID variable, some shells do not set it but some
+# scripts expect it to be
+if [ -z "$EUID" ];then
+    EUID="$(id -u)"
+fi
+
+# Disable logging of commands for root users, extend PATH for it too
+if [ "$EUID" = "0" ] ; then
+    export PATH="/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin"
+    unset HISTFILE
+fi
+
+# Setup some environment variables.
+export HISTSIZE=1000
+
+# Setup a red prompt for root and a green one for users. Also, do not display
+# more than two directories entries in it.
+PROMPT_DIRTRIM=2
+NORMAL="\[\e[0m\]"
+RED="\[\e[0;31m\]"
+GREEN="\[\e[1;32m\]"
+if [ "$EUID" = "0" ] ; then
+    export PS1="$RED\u [ $NORMAL\w$RED ]# $NORMAL"
+else
+    export PS1="$GREEN\u [ $NORMAL\w$GREEN ]\$ $NORMAL"
+fi
+unset script RED GREEN NORMAL
+
+# Setup the INPUTRC environment variable.
+if [ -z "$INPUTRC" ] && [ ! -f "$HOME/.inputrc" ] ; then
+        export INPUTRC=/etc/inputrc
+fi
+
+# By default, the umask should be set.
+if [ "$(id -gn)" = "$(id -un)" ] && [ "$EUID" != "0" ] ; then
+    umask 002
+else
+    umask 022
+fi
+
+export EDITOR=vi
+# Busybox's less does not support colors
+export PAGER=more
+
+for script in /etc/profile.d/*.sh ; do
+        if [ -r $script ] ; then
+                . $script
+        fi
+done
+
+# End /etc/profile

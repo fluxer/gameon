@@ -1,0 +1,9 @@
+# Begin /etc/fstab
+
+# file system  mount-point  type     options             dump  fsck
+
+# /dev/sdXX    /            ext4     defaults,noatime    1     1
+# /dev/sdXX    /home        ext4     defaults,noatime    1     2
+# /dev/sdXX    swap         swap     pri=1               0     0
+
+# End /etc/fstab

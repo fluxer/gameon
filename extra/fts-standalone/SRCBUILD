@@ -1,0 +1,26 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+version=1.2.7
+release=1
+description="A standalone library to implement GNU libc's fts"
+depends=('gcc')
+sources=("https://github.com/pullmoll/musl-fts/archive/v$version.tar.gz")
+
+src_prepare() {
+    cd "$SOURCE_DIR/musl-fts-$version"
+
+    ./bootstrap.sh
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/musl-fts-$version"
+
+    ./configure --prefix=/usr
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/musl-fts-$version"
+
+    make DESTDIR="$INSTALL_DIR" install
+}

@@ -1,0 +1,44 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/grub.html
+
+version=2.04
+release=1
+description="Multiboot boot loader"
+depends=('musl' 'busybox' 'xz')
+makedepends=('bison' 'flex' 'python2')
+sources=("http://ftp.gnu.org/gnu/grub/grub-$version.tar.xz"
+        'grub-add-GRUB_COLOR_variables.patch'
+        'grub.default')
+src_prepare() {
+    cd "$SOURCE_DIR/grub-$version"
+
+    patch -Nup1 -i "$SOURCE_DIR/grub-add-GRUB_COLOR_variables.patch"
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/grub-$version"
+
+    export CFLAGS="${CFLAGS//-fstack-protector/}"
+
+    ./configure --prefix=/usr \
+        --sysconfdir=/etc \
+        --with-platform=pc \
+        --disable-efiemu \
+        --disable-werror \
+        --disable-rpath \
+        --disable-nls \
+        --disable-grub-mount \
+        --disable-device-mapper \
+        --disable-grub-mkfont
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/grub-$version"
+
+    make DESTDIR="$INSTALL_DIR" install 
+
+    install -vDm0644 "$SOURCE_DIR/grub.default" \
+        "$INSTALL_DIR/etc/default/grub"
+}

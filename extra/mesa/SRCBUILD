@@ -1,0 +1,58 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/x/mesa.html
+
+version=19.2.1
+release=1
+description="OpenGL compatible 3D graphics library"
+depends=('xorg-libraries' 'libdrm' 'llvm' 'elfutils')
+makedepends=('xorg-makeutils' 'xorg-protocols' 'python-mako' 'meson' 'expat')
+sources=("https://mesa.freedesktop.org/archive/mesa-$version.tar.xz"
+        'musl-fix-includes.patch'
+        'no-gettext.patch')
+
+src_prepare() {
+    cd "$SOURCE_DIR/mesa-$version"
+
+    patch -Np1 -i ../musl-fix-includes.patch
+    patch -Np1 -i ../no-gettext.patch
+    sed 's|USE_ELF_TLS|DO_NOT_USE_ELF_TLS|g' -i meson.build
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/mesa-$version"
+
+    _dri="i915,i965,r100,r200,nouveau"
+    _gallium="r300,r600,radeonsi,nouveau,swrast"
+    _vulkan=""
+
+    meson ../build --buildtype plain \
+        --prefix /usr \
+        -Db_ndebug=true \
+        -Ddri-drivers="$_dri" \
+        -Dgallium-drivers="$_gallium" \
+        -Dvulkan-drivers="$_vulkan" \
+        -Dplatforms="drm,x11" \
+        -Dshared-glapi=true \
+        -Dosmesa=gallium \
+        -Dglx=dri \
+        -Dglx-tls=false \
+        -Ddri3=true \
+        -Degl=true \
+        -Dgbm=true \
+        -Dgallium-xa=true \
+        -Dgallium-va=false \
+        -Dgallium-nine=true \
+        -Dllvm=true \
+        -Dgles1=true \
+        -Dgles2=true \
+        -Dgallium-vdpau=false \
+        -Dvalgrind=false \
+        -Dgallium-xvmc=false
+    ninja -C ../build
+}
+
+src_install() {
+    cd "$SOURCE_DIR/mesa-$version"
+    DESTDIR="$INSTALL_DIR" ninja -C ../build install
+}

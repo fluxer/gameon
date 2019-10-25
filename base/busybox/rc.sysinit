@@ -1,0 +1,65 @@
+#!/bin/sh
+
+. /etc/rc.common
+
+msg "Mounting pseudo filesystems..."
+cmd mkdir -p /proc /sys /dev /dev/pts /run
+if ! mountpoint -q /proc ;then
+    cmd mount -t proc proc /proc -o nosuid,noexec,nodev
+fi
+if ! mountpoint -q /sys ;then
+    cmd mount -t sysfs sys /sys -o nosuid,noexec,nodev
+fi
+if ! mountpoint -q /dev ;then
+    cmd mount -t devtmpfs dev /dev -o mode=0755,nosuid
+fi
+if ! mountpoint -q /dev/pts ;then
+    cmd mount -t devpts devpts /dev/pts -o gid=5,mode=620
+fi
+if ! mountpoint -q /run ;then
+    cmd mount -t tmpfs run /run
+    cmd mkdir -p /run/lock
+fi
+
+if [ ! -e "/etc/mtab" ];then
+    msg "Creating mtab symlink..."
+    cmd ln -s /proc/mounts /etc/mtab
+fi
+
+if [ ! -d "/dev/fd" ];then
+    msg "Creating /dev/fd symlink..."
+    cmd ln -s /proc/self/fd /dev/fd
+fi
+ln -sf /dev/fd/0 /dev/stdin
+ln -sf /dev/fd/1 /dev/stdout
+ln -sf /dev/fd/2 /dev/stderr
+
+msg "Setting up hotplugger..."
+if [ -e "/proc/sys/kernel/hotplug" ];then
+    cmd echo "$(which mdev)" > /proc/sys/kernel/hotplug
+fi
+cmd touch /dev/mdev.log
+cmd mdev -s
+
+msg "Loading modules..."
+find /sys -name modalias -type f -exec sort -u {} + | xargs modprobe -qba
+
+msg "Bringing up interfaces..."
+cmd ifconfig lo up
+for iface in /sys/class/net/*;do
+    ibase="$(basename $iface)"
+    if [ "$ibase" != "lo" ]; then
+        cmd ifconfig "$ibase" up
+    fi
+done
+
+# TODO: clock, hostname
+
+msg "Mounting all filesystem..."
+cmd mount -a
+
+for initscript in /etc/init.d/*;do
+    if [ -x "$initscript" ];then
+        "$initscript" start
+    fi
+done

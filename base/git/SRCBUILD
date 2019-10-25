@@ -1,0 +1,40 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/general/git.html
+
+version=2.22.1
+release=1
+description="Fast, scalable, distributed revision control system"
+depends=('busybox' 'expat' 'openssl' 'curl')
+sources=("http://www.kernel.org/pub/software/scm/git/git-$version.tar.xz"
+        'gitconfig')
+backup=('etc/gitconfig')
+
+src_compile() {
+    cd "$SOURCE_DIR/git-$version"
+
+    ./configure --prefix=/usr \
+        --libexecdir=/usr/lib \
+        --with-gitconfig=/etc/gitconfig \
+        --without-tcltk
+    make NO_CVS=YesPlease \
+        NO_SVN_TESTS=YesPlease \
+        NO_GETTEXT=YesPlease \
+        NO_TCLTK=YesPlease
+}
+
+src_install() {
+    cd "$SOURCE_DIR/git-$version"
+
+    make NO_CVS=YesPlease \
+        NO_SVN_TESTS=YesPlease \
+        NO_GETTEXT=YesPlease \
+        NO_TCLTK=YesPlease \
+        NO_INSTALL_HARDLINKS=1 \
+        DESTDIR="$INSTALL_DIR" \
+        install
+
+    # install gitconfig as system-wide config file
+    install -vDm644 "$SOURCE_DIR/gitconfig" "$INSTALL_DIR/etc/gitconfig"
+}
+

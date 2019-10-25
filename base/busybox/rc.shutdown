@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. /etc/rc.common
+
+for initscript in $(find /etc/init.d/* | sort -r);do
+    if [ -x "$initscript" ];then
+        "$initscript" stop
+    fi
+done
+
+msg "Unmounting all filesystem..."
+cmd mount -a -r -f

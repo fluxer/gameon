@@ -1,0 +1,16 @@
+# /etc/inittab:  This file describes how the INIT process should set up
+#                the system in a certain run-level.
+
+# System initialization, mount local filesystems, etc.
+::sysinit:/etc/rc.sysinit
+
+# Start terminals
+::respawn:/sbin/getty 38400 tty1 linux
+::respawn:/sbin/getty 38400 tty2 linux
+::respawn:/sbin/getty 38400 tty3 linux
+
+# Finally, shut the system down
+::shutdown:/etc/rc.shutdown
+
+# What to do at the "Three Finger Salute"
+::ctrlaltdel:/sbin/reboot

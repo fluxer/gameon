@@ -1,0 +1,77 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/x/x7driver.html
+
+version=1.20.5
+release=1
+description="X.Org video and input devices drivers"
+depends=('xorg-server')
+makedepends=('xorg-protocols' 'xorg-makeutils')
+sources=("http://xorg.freedesktop.org/releases/individual/driver/xf86-video-ati-19.1.0.tar.bz2"
+        "http://anduin.linuxfromscratch.org/BLFS/xf86-video-intel/xf86-video-intel-20190723.tar.xz"
+        "http://xorg.freedesktop.org/releases/individual/driver/xf86-video-nouveau-1.0.16.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/driver/xf86-video-vesa-2.4.0.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/driver/xf86-video-vmware-13.3.0.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/driver/xf86-input-mouse-1.9.3.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/driver/xf86-input-keyboard-1.9.0.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/driver/xf86-input-vmmouse-13.1.0.tar.bz2")
+
+src_compile() {
+    _packages=$(find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d)
+
+    # build fails with clang
+    export CC=gcc
+
+    # https://bugs.gentoo.org/show_bug.cgi?id=488906
+    LDFLAGS="$LDFLAGS -Wl,-z,lazy"
+
+    for _pkg in $_packages;do
+        cd "$_pkg"
+        echo "Compiling $_pkg..."
+
+        case "$_pkg" in
+            *ati*) ./configure --prefix=/usr \
+                        --sysconfdir=/etc \
+                        --localstatedir=/var \
+                        --disable-static \
+                        --enable-glamor ;;
+            *intel*) ./autogen.sh --prefix=/usr \
+                           --sysconfdir=/etc \
+                            --localstatedir=/var \
+                            --libexecdir=/usr/lib/intel \
+                            --disable-static \
+                            --enable-kms-only \
+                            --enable-glamor \
+                            --enable-uxa \
+                            --with-default-accel=sna ;;
+                *)     ./configure --prefix=/usr \
+                            --sysconfdir=/etc \
+                            --localstatedir=/var \
+                            --disable-static \
+                            --without-libudev ;;
+        esac
+        make
+    done
+}
+
+src_install() {
+    _packages=$(find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d)
+    for _pkg in $_packages;do
+        cd "$_pkg"
+        echo "Installing $_pkg files..."
+        make DESTDIR="$INSTALL_DIR" install
+    done
+}
+
+post_install() {
+    echo
+    echo " >> The Intel driver now allows to switch"
+    echo " >> between sna/uxa acceleration methods."
+    echo " >> Add to the device section in /etc/X11/xorg.conf"
+    echo ' >>   Option "AccelMethod" "sna"'
+    echo " >> use uxa method if you run into trouble with sna."
+    echo
+    echo " >> Make sure you use KernelModeSetting (KMS)"
+    echo " >> if you are using the Nouveau driver."
+    echo
+}

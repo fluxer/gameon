@@ -1,0 +1,23 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/bison.html
+
+release=1
+version=3.4.2
+description="General-purpose parser generator"
+depends=('musl')
+sources=("http://ftp.gnu.org/gnu/bison/bison-$version.tar.xz")
+
+src_compile() {
+    cd "$SOURCE_DIR/bison-$version"
+
+    ./configure --prefix=/usr \
+        --disable-rpath \
+        --disable-nls
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/bison-$version"
+    make DESTDIR="$INSTALL_DIR" install 
+}

@@ -1,0 +1,26 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/basicnet/curl.html
+
+version=7.65.3
+release=1
+description="Command line tool for transferring data with URL syntax"
+depends=('openssl' 'zlib')
+sources=("http://curl.haxx.se/download/curl-$version.tar.xz")
+
+src_compile() {
+    cd "$SOURCE_DIR/curl-$version"
+
+    _options="--disable-smb --disable-ldap --disable-ldaps"
+    ./configure --prefix=/usr \
+        --disable-static \
+        --enable-threaded-resolver \
+        --with-ca-bundle=/etc/ssl/cacert.pem \
+        $_options
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/curl-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

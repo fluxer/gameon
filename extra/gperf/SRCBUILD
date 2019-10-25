@@ -1,0 +1,20 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/general/gperf.html
+
+release=1
+version=3.1
+description="Perfect hash function generator"
+sources=("http://ftp.gnu.org/pub/gnu/gperf/gperf-$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/gperf-$version"
+
+    ./configure --prefix=/usr
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/gperf-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

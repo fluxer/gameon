@@ -1,0 +1,58 @@
+#!/bin/sh
+
+. /etc/rc.common
+
+# If the file is a symlink somewhere (like /etc/resolv.conf pointing to /run/resolv.conf), make sure things work.
+RESOLV_CONF="$(readlink -f /etc/resolv.conf)"
+
+[ -n "$1" ] || { error "Error: should be called from udhcpc"; exit 1; }
+
+NETMASK=""
+[ -n "$subnet" ] && NETMASK="netmask $subnet"
+BROADCAST="broadcast +"
+[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+
+msg "Setting up $interface"
+case "$1" in
+    deconfig)
+        submsg "Setting address to: 0.0.0.0"
+        ifconfig $interface 0.0.0.0
+        ;;
+
+    renew|bound)
+        submsg "Setting address to: $ip"
+        ifconfig $interface $ip $NETMASK $BROADCAST
+
+        if [ -n "$router" ] ; then
+            submsg "Deleting routers"
+            while route del default gw 0.0.0.0 dev $interface ; do
+                    :
+            done
+
+            metric=0
+            for i in $router ; do
+                submsg "Adding router: $i"
+                if [ "$subnet" = "255.255.255.255" ]; then
+                    # special case for /32 subnets:
+                    # /32 instructs kernel to always use routing for all outgoing packets
+                    # (they can never be sent to local subnet - there is no local subnet for /32).
+                    # Used in datacenters, avoids the need for private ip-addresses between two hops.
+                    ip route add $i dev $interface
+                fi
+                route add default gw $i dev $interface metric $((metric++))
+            done
+        fi
+
+        submsg "Recreating $RESOLV_CONF"
+        tmpfile="/tmp/udhcpc-$interface.conf"
+        > "$tmpfile"
+        [ -n "$domain" ] && echo "search $domain" >> "$tmpfile"
+        for i in $dns ; do
+            submsg "Adding DNS server: $i"
+            echo "nameserver $i" >> "$tmpfile"
+        done
+        cmd mv "$tmpfile" "$RESOLV_CONF"
+        ;;
+esac
+
+exit 0

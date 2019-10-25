@@ -1,0 +1,17 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+version=1.1.1
+release=1
+description="Implements a XML/HTML/XHTML Markup safe string for Python"
+depends=('python')
+sources=("https://pypi.io/packages/source/M/MarkupSafe/MarkupSafe-$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/MarkupSafe-$version"
+    python3.7 setup.py build
+}
+
+src_install() {
+    cd "$SOURCE_DIR/MarkupSafe-$version"
+    python3.7 setup.py install --root="$INSTALL_DIR" --optimize=1 --skip-build
+}

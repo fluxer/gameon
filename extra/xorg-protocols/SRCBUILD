@@ -1,0 +1,37 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/x/x7proto.html
+
+version=1.20.5
+release=1
+description="X.Org protocol headers"
+depends=('musl')
+makedepends=('python2')
+sources=("http://xorg.freedesktop.org/releases/individual/xcb/xcb-proto-1.13.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/proto/xorgproto-2019.1.tar.gz"
+        "http://xorg.freedesktop.org/releases/individual/proto/printproto-1.0.5.tar.bz2")
+
+src_compile() {
+    _packages=$(find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d)
+    for _pkg in $_packages;do
+        cd "$_pkg"
+        echo "Compiling $_pkg..."
+        ./configure --prefix=/usr \
+             --sysconfdir=/etc \
+             --localstatedir=/var
+        make
+    done
+}
+
+src_install() {
+    _packages=$(find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d)
+    for _pkg in $_packages;do
+        cd "$_pkg"
+        echo "Installing $_pkg files..."
+        make DESTDIR="$INSTALL_DIR" install
+    done
+
+   # now part of xorg-libraries
+   rm -vf "$INSTALL_DIR/usr/include/X11/extensions/vldXvMC.h"
+   rm -vf "$INSTALL_DIR/usr/include/X11/extensions/XKBgeom.h"
+}

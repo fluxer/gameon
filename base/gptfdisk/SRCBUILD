@@ -1,0 +1,21 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/postlfs/gptfdisk.html
+
+version=1.0.4
+release=1
+description="Disk partitioning tool loosely modeled on Linux fdisk"
+depends=('curses' 'e2fsprogs')
+sources=("https://download.sf.net/gptfdisk/gptfdisk-$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/gptfdisk-$version"
+
+    make cgdisk
+}
+
+src_install() {
+    cd "$SOURCE_DIR/gptfdisk-$version"
+
+    install -Dm0755 cgdisk "$INSTALL_DIR/usr/bin/cgdisk"
+}

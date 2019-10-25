@@ -1,0 +1,23 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/x/libdrm.html
+
+version=2.4.100
+release=1
+description="Userspace library for accessing the DRM"
+depends=('musl' 'xorg-libraries')
+sources=("http://dri.freedesktop.org/libdrm/libdrm-$version.tar.bz2")
+
+src_compile() {
+    cd "$SOURCE_DIR/libdrm-$version"
+
+    ./configure --prefix=/usr \
+        --disable-udev \
+        --disable-valgrind
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/libdrm-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

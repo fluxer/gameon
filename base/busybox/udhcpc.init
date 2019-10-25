@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. /etc/rc.common
+
+case "$1" in
+    start)
+        msg "Starting DHCP daemon"
+        cmd start-stop-daemon --start --exec /sbin/udhcpc --pidfile /run/udhcpc.pid -- -S -p /run/udhcpc.pid ;;
+    stop)
+        msg "Stopping DHCP daemon"
+        cmd start-stop-daemon --stop --exec /sbin/udhcpc --pidfile /run/udhcpc.pid ;;
+esac

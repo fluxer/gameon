@@ -1,0 +1,31 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+version=1.3
+release=1
+description="Hierarchial argument parsing library broken out from glibc"
+depends=('gcc')
+sources=("http://www.lysator.liu.se/~nisse/misc/argp-standalone-$version.tar.gz"
+        '001-throw-in-funcdef.patch'
+        'gnu89-inline.patch')
+
+src_prepare() {
+    cd "$SOURCE_DIR/argp-standalone-$version"
+
+    patch -Np1 -i ../001-throw-in-funcdef.patch
+    patch -Np1 -i ../gnu89-inline.patch
+    autoreconf -fi
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/argp-standalone-$version"
+
+    ./configure --prefix=/usr
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/argp-standalone-$version"
+
+    install -vDm644 argp.h "$INSTALL_DIR/usr/include/argp.h"
+    install -vDm755 libargp.a "$INSTALL_DIR/usr/lib/libargp.a"
+}

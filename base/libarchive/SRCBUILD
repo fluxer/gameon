@@ -1,0 +1,36 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/general/libarchive.html
+
+release=1
+version=3.3.3
+description="Multi-format archive and compression library"
+depends=('zlib' 'bzip2' 'xz' 'musl')
+sources=("http://www.libarchive.org/downloads/libarchive-$version.tar.gz")
+
+src_prepare() {
+    cd "$SOURCE_DIR/libarchive-$version"
+    autoreconf -fi
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/libarchive-$version"
+
+    ./configure --prefix=/usr \
+        --with-openssl \
+        --without-expat \
+        --without-nettle \
+        --without-xml2 \
+        --without-lz4 \
+        --without-lzo2 \
+        --disable-rpath \
+        --disable-acl \
+        --disable-xattr \
+        --disable-static
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/libarchive-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

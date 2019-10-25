@@ -1,0 +1,71 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://git.busybox.net/busybox/tree/docs/syslog.conf.txt
+# http://git.busybox.net/busybox/tree/miscutils/man.c
+# http://git.busybox.net/busybox/plain/docs/mdev.txt
+# http://git.busybox.net/busybox/plain/miscutils/fbsplash.c
+# http://git.busybox.net/busybox/plain/miscutils/fbsplash.cfg
+
+release=1
+version=1.31.0
+description="Utilities for rescue and embedded systems"
+makedepends=('musl' 'make' 'gcc' 'curses')
+sources=("http://www.busybox.net/downloads/busybox-$version.tar.bz2"
+        'config' 'syslog.conf' 'mdev.conf'
+        'rc.common' 'rc.sysinit' 'rc.shutdown' 'inittab'
+        'sysklogd.init' 'udhcpc.init' 'udhcpc.script')
+
+src_compile() {
+    cd "$SOURCE_DIR/busybox-$version"
+    cp "$SOURCE_DIR/config" .config
+
+    make oldconfig
+    make menuconfig
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/busybox-$version"
+
+    make CONFIG_PREFIX="$INSTALL_DIR" install
+
+    chmod -v 4555 "$INSTALL_DIR/bin/busybox"
+    install -vDm644 "$SOURCE_DIR/mdev.conf" "$INSTALL_DIR/etc/mdev.conf"
+    install -vDm644 "$SOURCE_DIR/syslog.conf" "$INSTALL_DIR/etc/syslog.conf"
+
+    # install init script
+    install -vm644 "$SOURCE_DIR/rc.common" "$INSTALL_DIR/etc/rc.common"
+    install -vm744 "$SOURCE_DIR/rc.sysinit" "$INSTALL_DIR/etc/rc.sysinit"
+    install -vm744 "$SOURCE_DIR/rc.shutdown" "$INSTALL_DIR/etc/rc.shutdown"
+    install -vDm744 "$SOURCE_DIR/sysklogd.init" "$INSTALL_DIR/etc/init.d/sysklogd"
+    install -vDm744 "$SOURCE_DIR/udhcpc.init" "$INSTALL_DIR/etc/init.d/udhcpc"
+    install -vm644 "$SOURCE_DIR/inittab" "$INSTALL_DIR/etc/inittab"
+
+    install -vDm744 "$SOURCE_DIR/udhcpc.script" "$INSTALL_DIR/usr/share/udhcpc/default.script"
+    install -vm644 examples/udhcp/udhcpd.conf "$INSTALL_DIR/etc/udhcpd.conf"
+
+    # hardcoded sometimes
+    mkdir -vp "$INSTALL_DIR/usr/bin"
+    cd "$INSTALL_DIR/usr/bin"
+    ln -vsf ../../bin/env .
+
+    # not needed
+    rm -vf "$INSTALL_DIR/linuxrc"
+    # provided by curses
+    rm -vf "$INSTALL_DIR/bin/clear"
+    rm -vf "$INSTALL_DIR/bin/reset"
+    # provided by bzip2
+    rm -vf "$INSTALL_DIR/bin/bunzip2"
+    rm -vf "$INSTALL_DIR/bin/bzcat"
+    rm -vf "$INSTALL_DIR/bin/bzip2"
+    # provided by xz
+    rm -vf "$INSTALL_DIR/bin/lzcat"
+    rm -vf "$INSTALL_DIR/bin/lzma"
+    rm -vf "$INSTALL_DIR/bin/unlzma"
+    rm -vf "$INSTALL_DIR/bin/unxz"
+    rm -vf "$INSTALL_DIR/bin/xz"
+    rm -vf "$INSTALL_DIR/bin/xzcat"
+    # provided by e2fsprogs
+    rm -vf "$INSTALL_DIR/sbin/blkid"
+    rm -vf "$INSTALL_DIR/sbin/findfs"
+}

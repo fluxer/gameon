@@ -1,0 +1,80 @@
+diff --git a/configure.ac b/configure.ac
+index ef92013..9e5d2b1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -37,7 +37,7 @@ XORG_MACROS_VERSION(1.8)
+ XORG_DEFAULT_OPTIONS
+ 
+ # Obtain compiler/linker options for dependencies
+-PKG_CHECK_MODULES(XINPUT, x11 xext [xi >= 1.2] [inputproto >= 1.5] xrandr xinerama)
++PKG_CHECK_MODULES(XINPUT, x11 xext [xi >= 1.2] [inputproto >= 1.5] xrandr)
+ 
+ # XI2 support
+ PKG_CHECK_MODULES(XI2, [xi >= 1.2.99.2] [inputproto >= 1.9.99.15],
+diff --git a/src/transform.c b/src/transform.c
+index d85b071..cb791c3 100644
+--- a/src/transform.c
++++ b/src/transform.c
+@@ -26,7 +26,6 @@
+ #include "xinput.h"
+ #include <string.h>
+ #include <X11/extensions/Xrandr.h>
+-#include <X11/extensions/Xinerama.h>
+ 
+ 
+ typedef struct Matrix {
+@@ -261,53 +260,7 @@ map_output_xrandr(Display *dpy, int deviceid, const char *output_name)
+ static int
+ map_output_xinerama(Display *dpy, int deviceid, const char *output_name)
+ {
+-    const char *prefix = "HEAD-";
+-    XineramaScreenInfo *screens = NULL;
+-    int rc = EXIT_FAILURE;
+-    int event, error;
+-    int nscreens;
+-    int head;
+-    Matrix m;
+-
+-    if (!XineramaQueryExtension(dpy, &event, &error))
+-    {
+-        fprintf(stderr, "Unable to set screen mapping. Xinerama extension not found\n");
+-        goto out;
+-    }
+-
+-    if (strlen(output_name) < strlen(prefix) + 1 ||
+-        strncmp(output_name, prefix, strlen(prefix)) != 0)
+-    {
+-        fprintf(stderr, "Please specify the output name as HEAD-X,"
+-                "where X is the screen number\n");
+-        goto out;
+-    }
+-
+-    head = output_name[strlen(prefix)] - '0';
+-
+-    screens = XineramaQueryScreens(dpy, &nscreens);
+-
+-    if (nscreens == 0)
+-    {
+-        fprintf(stderr, "Xinerama failed to query screens.\n");
+-        goto out;
+-    } else if (nscreens <= head)
+-    {
+-        fprintf(stderr, "Found %d screens, but you requested %s.\n",
+-                nscreens, output_name);
+-        goto out;
+-    }
+-
+-    matrix_set_unity(&m);
+-    set_transformation_matrix(dpy, &m,
+-                              screens[head].x_org, screens[head].y_org,
+-                              screens[head].width, screens[head].height,
+-                              RR_Rotate_0);
+-    rc = apply_matrix(dpy, deviceid, &m);
+-
+-out:
+-    XFree(screens);
+-    return rc;
++    return EXIT_FAILURE;
+ }
+ 
+ int

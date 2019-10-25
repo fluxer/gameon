@@ -1,0 +1,46 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/perl.html
+
+arch=('i686' 'x86_64')
+pkgname="perl"
+version=5.28.2
+release=1
+description="Highly capable, feature-rich programming language"
+groups=('base')
+depends=('musl' 'zlib' 'busybox' 'gdbm')
+sources=("http://www.cpan.org/src/5.0/perl-$version.tar.xz"
+        'stack-protector.patch')
+sha1sums=('e7be78eca9ac5596783e6abcf957408050a7b650'
+          'dd81464e4a8f82ba791c1c0bfad25119d34dac25')
+
+src_prepare() {
+    cd "$SOURCE_DIR/perl-$version"
+    patch -Np1 -i "$SOURCE_DIR/stack-protector.patch"
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/perl-$version"
+
+    export BUILD_ZLIB=False BUILD_BZIP2=0
+
+    sh Configure -des -Dprefix=/usr   \
+        -Dvendorprefix=/usr           \
+        -Dman1dir=/usr/share/man/man1 \
+        -Dman3dir=/usr/share/man/man3 \
+        -Dpager="/usr/bin/less -I"  \
+        -Duseshrplib \
+        -Doptimize="$CFLAGS" \
+        -Dldflags="$LDFLAGS"
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/perl-$version"
+
+    make DESTDIR="$INSTALL_DIR" install
+
+    # saves ~10MB
+    rm -vrf "$INSTALL_DIR/usr/lib/perl5/pod"
+    find "$INSTALL_DIR/usr/lib/perl5/" -name '*.pod' -delete
+}

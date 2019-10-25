@@ -1,0 +1,37 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+release=1
+version=1.1.24
+description='Lightweight implementation of C standard library'
+sources=("http://www.musl-libc.org/releases/musl-$version.tar.gz")
+
+# using -ffast-math to compile libc will break
+export CFLAGS="${CFLAGS//-ffast-math/}"
+export CXXFLAGS="${CXXFLAGS//-ffast-math/}"
+
+src_compile() {
+    cd "$SOURCE_DIR/musl-$version"
+
+    ./configure --prefix=/usr \
+        --exec-prefix=/ \
+        --libdir=/lib \
+        --enable-optimize=internal,malloc,string,math
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/musl-$version"
+    make DESTDIR="$INSTALL_DIR" install
+
+    # musl provides ldd via a sym link to its ld.so
+    mkdir -vp "$INSTALL_DIR/usr/bin"
+    cd "$INSTALL_DIR/usr/bin"
+    case $CARCH in
+        i686)
+        ln -vsf ../../lib/ld-musl-i386.so.1 ldd
+        ;;
+        x86_64)
+        ln -vsf ../../lib/ld-musl-x86_64.so.1 ldd
+        ;;
+    esac
+}

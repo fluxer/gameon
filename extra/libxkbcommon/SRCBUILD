@@ -1,0 +1,31 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/general/pcre.html
+
+version=0.8.4
+release=1
+description="Keymap handling library for toolkits and window systems"
+depends=('xkeyboard-config' 'xorg-libraries')
+makedepends=('xorg-makeutils' 'xorg-protocols')
+sources=("https://github.com/xkbcommon/libxkbcommon/archive/xkbcommon-$version.tar.gz")
+
+src_prepare() {
+    cd "$SOURCE_DIR/libxkbcommon-xkbcommon-$version"
+
+    ./autogen.sh
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/libxkbcommon-xkbcommon-$version"
+
+    ./configure --prefix=/usr \
+        --sysconfdir=/etc \
+        --localstatedir=/var \
+        --disable-static
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/libxkbcommon-xkbcommon-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

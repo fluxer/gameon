@@ -1,0 +1,12 @@
+diff --git a/src/util/xmlpool/meson.build b/src/util/xmlpool/meson.build
+index 81184fa..3c68b6e 100644
+--- a/src/util/xmlpool/meson.build
++++ b/src/util/xmlpool/meson.build
+@@ -36,5 +36,5 @@ xmlpool_options_h = custom_target(
+   depend_files : _langs_po_files,
+ )
+ 
+-i18n = import('i18n')
+-i18n.gettext('xmlpool', install : false)
++# i18n = import('i18n')
++# i18n.gettext('xmlpool', install : false)

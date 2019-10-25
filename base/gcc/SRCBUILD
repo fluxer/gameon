@@ -1,0 +1,69 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter05/gcc-pass1.html
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/gcc.html
+# http://www.linuxfromscratch.org/blfs/view/svn/general/gcc.html
+# https://git.alpinelinux.org/cgit/aports/plain/main/gcc/APKBUILD
+# http://gcc.gnu.org/git/?p=gcc.git;a=summary
+
+version=8.3.0
+release=1
+description="GNU compiler collection, includes the C and C++ frontends"
+depends=('musl' 'zlib' 'mpc' 'mpfr')
+sources=("http://ftp.gnu.org/gnu/gcc/gcc-$version/gcc-$version.tar.xz")
+
+src_prepare() {
+    cd "$SOURCE_DIR/gcc-$version"
+
+    # hack! - some configure tests for header files using "$CPP $CPPFLAGS"
+    sed -i "/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/" {libiberty,gcc}/configure
+
+    # do not run fixincludes
+    sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
+
+    # for x86_64, to avoid lib64
+    sed -i '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/gcc-$version"
+
+    # using -Wformat -Werror=format-security will cause build failures
+    CPPFLAGS="${CPPFLAGS/-Wformat/}"
+    CPPFLAGS="${CPPFLAGS/-Werror=format-security/}"
+
+    # for various reasons - build with GCC
+    export CC=gcc CXX=g++
+
+    _bootstrap="--disable-shared --enable-static --disable-threads --disable-tls --enable-bootstrap --with-newlib --disable-libstdcxx-pch"
+    _normal="--enable-shared --disable-static --enable-threads=posix --enable-tls --disable-bootstrap --with-system-zlib"
+    mkdir -pv "$SOURCE_DIR/gcc-build" && cd "$SOURCE_DIR/gcc-build"
+    ../gcc-$version/configure \
+        --build="$CHOST" \
+        --prefix=/usr \
+        --libexec=/usr/lib \
+        --with-linker-hash-style=gnu \
+        --enable-clocale=generic \
+        --enable-__cxa_atexit \
+        --enable-languages="c,c++" \
+        --enable-libgomp \
+        --disable-libsanitizer \
+        --disable-libmudflap \
+        --disable-libssp \
+        --disable-libmpx \
+        --disable-plugins \
+        --disable-lto \
+        --disable-libstdcxx-dual-abi \
+        --disable-multilib \
+        --disable-nls \
+        --disable-symvers \
+        $_normal
+    make
+}
+
+src_install(){
+    cd "$SOURCE_DIR/gcc-build"
+
+    make DESTDIR="$INSTALL_DIR" install
+    ln -svf gcc "$INSTALL_DIR/usr/bin/cc"
+}

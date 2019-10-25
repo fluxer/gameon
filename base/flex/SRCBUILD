@@ -1,0 +1,28 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/flex.html
+
+release=1
+version=2.6.4
+description="Fast lexical analyser generator"
+depends=('musl')
+# makedepends=('texinfo')
+sources=("https://github.com/westes/flex/releases/download/v$version/flex-$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/flex-$version"
+
+    ./configure --prefix=/usr \
+        --disable-static \
+        --disable-nls \
+        --disable-rpath
+    make MAKEINFO=true
+}
+
+src_install() {
+    cd "$SOURCE_DIR/flex-$version"
+    touch doc/flex.1
+    make  MAKEINFO=true DESTDIR="$INSTALL_DIR" install
+    ln -vs flex "$INSTALL_DIR/usr/bin/lex"
+    rm -vf "$INSTALL_DIR/usr/share/man/man1/flex.1"
+}

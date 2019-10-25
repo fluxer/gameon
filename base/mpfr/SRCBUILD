@@ -1,0 +1,24 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/mpfr.html
+
+release=1
+version=4.0.2
+description="C library for multiple-precision floating-point computations with correct rounding"
+depends=('musl' 'gmp')
+sources=("http://www.mpfr.org/mpfr-$version/mpfr-$version.tar.xz")
+
+src_compile() {
+    cd "$SOURCE_DIR/mpfr-$version"
+
+    ./configure --prefix=/usr \
+        --enable-thread-safe \
+        --disable-static
+    make
+}
+
+src_install(){
+    cd "$SOURCE_DIR/mpfr-$version"
+    make DESTDIR="$INSTALL_DIR" install 
+}
+

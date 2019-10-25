@@ -1,0 +1,25 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/xz-utils.html
+
+release=1
+version=5.2.4
+description="Free general-purpose data compression software with high compression ratio"
+depends=('musl' 'busybox') # ash
+sources=("http://tukaani.org/xz/xz-$version.tar.xz")
+
+src_compile() {
+    cd "$SOURCE_DIR/xz-$version"
+
+    ./configure --prefix=/usr \
+        --exec-prefix=/ \
+        --disable-rpath \
+        --disable-static \
+        --disable-doc
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/xz-$version"
+    make DESTDIR="$INSTALL_DIR" pkgconfigdir=/lib/pkgconfig install 
+}

@@ -1,0 +1,49 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/binutils.html
+
+version=2.33.1
+release=1
+description="Collection of binary tools"
+depends=('zlib' 'musl')
+sources=("http://ftp.gnu.org/gnu/binutils/binutils-$version.tar.xz"
+        '91_all_libiberty-pic.patch')
+
+src_prepare() {
+    cd "$SOURCE_DIR/binutils-$version"
+    patch -Np0 -i "$SOURCE_DIR/91_all_libiberty-pic.patch"
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/binutils-$version"
+
+    # for various reasons - build with GCC
+    export CC=gcc CXX=g++
+
+    mkdir -v "$SOURCE_DIR/binutils-build" && cd "$SOURCE_DIR/binutils-build"
+    "$SOURCE_DIR/binutils-$version/configure" \
+        --prefix=/usr \
+        --enable-shared \
+        --enable-threads \
+        --enable-64-bit-bfd \
+        --disable-lto \
+        --disable-multilib \
+        --disable-static \
+        --disable-rpath \
+        --disable-werror \
+        --disable-nls
+    make tooldir="$INSTALL_DIR"
+}
+
+src_check() {
+    cd "$SOURCE_DIR/binutils-build"
+    make check
+}
+
+src_install() {
+    cd "$SOURCE_DIR/binutils-build"
+
+    make prefix="$INSTALL_DIR/usr" tooldir="$INSTALL_DIR" install
+    install -vdm755 "$INSTALL_DIR/usr/include"
+    cp -v "../binutils-$version/include/libiberty.h" "$INSTALL_DIR/usr/include"
+}

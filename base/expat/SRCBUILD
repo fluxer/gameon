@@ -1,0 +1,21 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/expat.html
+
+release=1
+version=2.2.6
+description="XML parser library written in C"
+depends=('musl')
+sources=("http://downloads.sf.net/expat/expat-$version.tar.bz2")
+
+src_compile() {
+    cd "$SOURCE_DIR/expat-$version"
+    ./configure --prefix=/usr \
+        --disable-static
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/expat-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}

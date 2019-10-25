@@ -1,0 +1,14 @@
+#!/bin/sh
+
+. /etc/rc.common
+
+case "$1" in
+    start)
+        msg "Starting logging daemons"
+        cmd start-stop-daemon --start --exec /sbin/syslogd --pidfile /run/syslogd.pid -- -m 0
+        cmd start-stop-daemon --start --exec /sbin/klogd --pidfile /run/klogd.pid -- -c 3 ;;
+    stop)
+        msg "Stopping logging daemons"
+        cmd start-stop-daemon --stop --exec /sbin/syslogd --pidfile /run/syslogd.pid
+        cmd start-stop-daemon --stop --exec /sbin/klogd --pidfile /run/klogd.pid ;;
+esac

@@ -1,0 +1,26 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+version=20190501
+description="Big Fucking Projects"
+depends=('busybox' 'python2' 'file' 'git')
+sources=('https://github.com/fluxer/bfp.git')
+
+src_compile() {
+    cd "$SOURCE_DIR/bfp.git"
+    make
+}
+
+src_check() {
+    cd "$SOURCE_DIR/bfp.git"
+    make check
+}
+
+src_install() {
+    cd "$SOURCE_DIR/bfp.git"
+    make DESTDIR="$INSTALL_DIR" install
+
+    sed 's|fluxer/core.git|fluxer/gameon.git|g' \
+        -i "$INSTALL_DIR/etc/spm/repositories.conf"
+    sed 's|-pipe|-pipe -ffast-math|g' \
+        -i "$INSTALL_DIR/etc/spm.conf"
+}

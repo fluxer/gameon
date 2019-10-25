@@ -1,0 +1,22 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/make.html
+
+release=1
+version=4.2.1
+description="Tool which controls the generation of executables and other non-source files of a program"
+depends=('musl')
+sources=("http://ftp.gnu.org/gnu/make/make-$version.tar.bz2")
+
+src_compile() {
+    cd "$SOURCE_DIR/make-$version"
+
+    ./configure --prefix=/usr \
+        --disable-rpath
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/make-$version"
+    make DESTDIR="$INSTALL_DIR" install 
+}

@@ -1,0 +1,31 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/readline.html
+
+release=1
+version=6.3.8
+description="Set of functions for use by applications that allow users to edit command lines as they are typed in"
+depends=('musl' 'curses')
+sources=("http://ftp.gnu.org/gnu/readline/readline-6.3.tar.gz"
+        'readline-6.3.8.patch')
+
+src_prepare() {
+    cd "$SOURCE_DIR/readline-6.3"
+
+    # upstream patches pulled from CRUX
+    patch -Np0 -i "$SOURCE_DIR/readline-6.3.8.patch"
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/readline-6.3"
+
+    ./configure --prefix=/usr \
+        --exec-prefix=/ \
+        --disable-static
+    make SHLIB_LIBS=-lncurses
+}
+
+src_install() {
+    cd "$SOURCE_DIR/readline-6.3"
+    make DESTDIR="$INSTALL_DIR" install 
+}

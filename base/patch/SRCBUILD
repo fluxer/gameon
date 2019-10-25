@@ -1,0 +1,24 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/patch.html
+
+release=1
+version=2.7.6
+description='A utility to apply patch files to original sources'
+depends=('musl')
+sources=("ftp://ftp.gnu.org/gnu/patch/patch-$version.tar.xz")
+
+src_compile() {
+    cd "$SOURCE_DIR/patch-$version"
+
+    ./configure --prefix=/usr \
+        --disable-xattr
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/patch-$version"
+
+    make DESTDIR="$INSTALL_DIR" install
+    rm -vf "$INSTALL_DIR/usr/lib/charset.alias"
+}

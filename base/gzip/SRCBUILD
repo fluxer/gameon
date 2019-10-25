@@ -1,0 +1,22 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/gzip.html
+
+release=1
+version=1.10
+description='GNU compression utility'
+depends=('musl' 'busybox') # less, ash
+sources=("ftp://ftp.gnu.org/pub/gnu/gzip/gzip-$version.tar.xz")
+src_compile() {
+    cd "$SOURCE_DIR/gzip-$version"
+
+    ./configure --prefix=/usr \
+        --disable-rpath
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/gzip-$version"
+    make prefix="$INSTALL_DIR/usr" install
+}
+

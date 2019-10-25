@@ -1,0 +1,43 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/e2fsprogs.html
+
+# NOTE: libuuid is required by gptfdisk, libuuid is optional but nice to have
+
+release=1
+version=1.44.6
+description="Filesystem utilities for use with the ext2/3/4 filesystems"
+depends=('musl')
+sources=("http://downloads.sf.net/e2fsprogs/e2fsprogs-$version.tar.gz")
+backup=('etc/mke2fs.conf')
+
+src_compile() {
+    cd "$SOURCE_DIR/e2fsprogs-$version"
+
+    mkdir -v ../e2fsprogs-build && cd ../e2fsprogs-build
+        ../e2fsprogs-$version/configure \
+        --prefix=/usr \
+        --bindir=/bin \
+        --with-root-prefix="" \
+        --enable-elf-shlibs \
+        --enable-symlink-install \
+        --enable-fsck \
+        --enable-libuuid \
+        --enable-libblkid \
+        --disable-rpath \
+        --disable-nls
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/e2fsprogs-build"
+
+    make -j1 DESTDIR="$INSTALL_DIR" MKDIR_P="install -d" install install-libs
+
+    # remove references to build directory
+    sed -i -e 's#^SS_DIR=.*#SS_DIR="/usr/share/ss"#' "$INSTALL_DIR/bin/mk_cmds"
+    sed -i -e 's#^ET_DIR=.*#ET_DIR="/usr/share/et"#' "$INSTALL_DIR/bin/compile_et"
+
+    # disable 2TB+ file support
+    sed -i 's|,huge_file||g' "$INSTALL_DIR/etc/mke2fs.conf"
+}

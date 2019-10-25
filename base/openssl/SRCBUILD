@@ -1,0 +1,38 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/openssl.html
+# https://curl.haxx.se/ca/
+
+release=1
+version=1.1.1d
+description='Secure Sockets Layer and Transport Layer Security tools'
+depends=('zlib')
+sources=("http://www.openssl.org/source/openssl-$version.tar.gz"
+        'cacert.pem')
+
+src_compile() {
+    cd "$SOURCE_DIR/openssl-$version"
+
+    _options=""
+    [ "$(uname -m)" = "x86_64" ] && _options="enable-ec_nistp_64_gcc_128"
+    ./config --prefix=/usr \
+        --openssldir=/etc/ssl \
+        shared \
+        zlib-dynamic \
+        $_options
+     make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/openssl-$version"
+    make DESTDIR="$INSTALL_DIR" \
+        LIBDIR=lib \
+        MANDIR=/usr/share/man \
+        MANSUFFIX=ssl install_sw install_ssldirs
+
+    install -vDm644 "$SOURCE_DIR/cacert.pem" "$INSTALL_DIR/etc/ssl/cacert.pem"
+
+    sed 's|./demoCA|/etc/ssl|g' \
+        -i "$INSTALL_DIR/etc/ssl/openssl.cnf" \
+        -i "$INSTALL_DIR/etc/ssl/openssl.cnf.dist"
+}

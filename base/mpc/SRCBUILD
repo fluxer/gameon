@@ -1,0 +1,22 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/mpc.html
+
+release=1
+version=1.1.0
+description="C library for the arithmetic of complex numbers with arbitrarily high precision and correct rounding of the result"
+depends=('musl' 'mpfr')
+sources=("https://ftp.gnu.org/gnu/mpc/mpc-$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/mpc-$version"
+
+    ./configure --prefix=/usr \
+        --disable-static
+    make
+}
+
+src_install(){
+    cd "$SOURCE_DIR/mpc-$version"
+    make DESTDIR="$INSTALL_DIR" install 
+}

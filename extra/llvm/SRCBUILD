@@ -1,0 +1,53 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/general/llvm.html
+
+version=8.0.1
+release=1
+description="Low Level Virtual Machine"
+depends=('perl' 'python' 'libffi' 'zlib')
+makedepends=('curses' 'cmake')
+sources=("https://github.com/llvm/llvm-project/releases/download/llvmorg-$version/llvm-$version.src.tar.xz"
+        "https://github.com/llvm/llvm-project/releases/download/llvmorg-$version/cfe-$version.src.tar.xz"
+        "https://github.com/llvm/llvm-project/releases/download/llvmorg-$version/compiler-rt-$version.src.tar.xz")
+
+src_prepare() {
+    cd "$SOURCE_DIR/llvm-$version.src"
+
+    # At the present, clang must reside inside the LLVM source code tree to build
+    # See http://llvm.org/bugs/show_bug.cgi?id=4840
+    # cp -a "$SOURCE_DIR/cfe-$version.src" tools/clang
+    # cp -a "$SOURCE_DIR/compiler-rt-$version.src" projects/compiler-rt
+}
+
+src_compile() {
+    cd "$SOURCE_DIR/llvm-$version.src"
+
+    # Force the use of GCC instead of clang and vise-versa
+    # export CC=gcc CXX=g++
+    # export CC=clang CXX=clang++
+
+    # http://llvm.org/docs/CMake.html
+    mkdir -vp "$SOURCE_DIR/build"
+    cd "$SOURCE_DIR/build"
+    cmake -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DLLVM_TARGETS_TO_BUILD="host;AMDGPU" \
+        -DLLVM_HOST_TRIPLE="$CHOST" \
+        -DLLVM_DEFAULT_TARGET_TRIPLE="$CHOST" \
+        -DLLVM_BUILD_EXAMPLES=OFF \
+        -DLLVM_BUILD_DOCS=OFF \
+        -DLLVM_BUILD_TESTS=OFF \
+        -DLLVM_ENABLE_ASSERTIONS=OFF \
+        -DLLVM_ENABLE_FFI=ON \
+        -DLLVM_ENABLE_ZLIB=ON \
+        -DLLVM_ENABLE_RTTI=ON \
+        -DBUILD_SHARED_LIBS=ON \
+        ../llvm-$version.src
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/build"
+    make DESTDIR="$INSTALL_DIR" install
+}

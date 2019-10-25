@@ -1,0 +1,25 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/general/cmake.html
+
+release=1
+version=3.13.4
+description="A cross-platform open-source make system"
+depends=('libarchive' 'curses')
+sources=("http://www.cmake.org/files/v3.13/cmake-$version.tar.gz")
+
+src_compile() {
+    cd "$SOURCE_DIR/cmake-$version"
+
+    ./bootstrap --prefix=/usr \
+        --mandir=/share/man \
+        --docdir=/share/doc/cmake \
+        --system-libarchive \
+        --no-system-jsoncpp
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/cmake-$version"
+    make DESTDIR="$INSTALL_DIR" install
+}
