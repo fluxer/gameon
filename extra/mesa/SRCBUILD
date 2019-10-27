@@ -2,7 +2,7 @@
 
 # http://www.linuxfromscratch.org/blfs/view/svn/x/mesa.html
 
-version=19.2.1
+version=19.2.2
 release=1
 description="OpenGL compatible 3D graphics library"
 depends=('xorg-libraries' 'libdrm' 'llvm' 'elfutils')
@@ -36,7 +36,6 @@ src_compile() {
         -Dshared-glapi=true \
         -Dosmesa=gallium \
         -Dglx=dri \
-        -Dglx-tls=false \
         -Ddri3=true \
         -Degl=true \
         -Dgbm=true \
