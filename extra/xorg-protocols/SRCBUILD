@@ -3,12 +3,12 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/x/x7proto.html
 
 version=1.20.5
-release=1
+release=2
 description="X.Org protocol headers"
 depends=('musl')
 makedepends=('python2')
 sources=("http://xorg.freedesktop.org/releases/individual/xcb/xcb-proto-1.13.tar.bz2"
-        "http://xorg.freedesktop.org/releases/individual/proto/xorgproto-2019.1.tar.gz"
+        "http://xorg.freedesktop.org/releases/individual/proto/xorgproto-2019.2.tar.gz"
         "http://xorg.freedesktop.org/releases/individual/proto/printproto-1.0.5.tar.bz2")
 
 src_compile() {
