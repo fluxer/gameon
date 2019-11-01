@@ -1,6 +1,6 @@
 # Maintainer: Ivailo Monev <xakepa10@gmail.com>
 
-version=4.18
+version=4.19
 release=1
 description="A compatibility layer for running Windows programs"
 depends=('fontconfig' 'xorg-libraries' 'freetype2' 'mesa' 'glu'
