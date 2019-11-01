@@ -20,7 +20,9 @@ src_compile() {
     make NO_CVS=YesPlease \
         NO_SVN_TESTS=YesPlease \
         NO_GETTEXT=YesPlease \
-        NO_TCLTK=YesPlease
+        NO_TCLTK=YesPlease \
+        NO_PERL=YesPlease \
+        NO_PYTHON=YesPlease
 }
 
 src_install() {
@@ -30,7 +32,9 @@ src_install() {
         NO_SVN_TESTS=YesPlease \
         NO_GETTEXT=YesPlease \
         NO_TCLTK=YesPlease \
-        NO_INSTALL_HARDLINKS=1 \
+        NO_PERL=YesPlease \
+        NO_PYTHON=YesPlease \
+        INSTALL_SYMLINKS=1 \
         DESTDIR="$INSTALL_DIR" \
         install
 
