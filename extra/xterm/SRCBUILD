@@ -2,7 +2,7 @@
 
 # http://www.linuxfromscratch.org/blfs/view/svn/x/xterm.html
 
-version=349
+version=350
 release=1
 description="X Terminal Emulator"
 depends=('xorg-libraries' 'curses' 'fontconfig')
