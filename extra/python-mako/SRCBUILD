@@ -1,6 +1,6 @@
 # Maintainer: Ivailo Monev <xakepa10@gmail.com>
 
-version=1.0.9
+version=1.0.14
 release=1
 description="Super-fast templating language that borrows the best ideas from the existing templating languages"
 depends=('python' 'python-markupsafe')
