@@ -7,7 +7,7 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/postlfs/users.html
 
 release=1
-version=20191023
+version=20191110
 description="Flesystem layout and base configuration files"
 sources=('passwd' 'group' 'resolv.conf' 'hosts' 'profile' 'inputrc' 'fstab'
         'usb.conf' 'os-release' 'networks'  'shells' 'securetty' 'sysctl.conf')
@@ -60,7 +60,7 @@ src_install() {
 
     # setup /etc directory
     touch etc/issue
-    echo "$version" > etc/entropy-release
+    echo "$version" > etc/gameon-release
     install -vm644 "$SOURCE_DIR/passwd" etc/passwd
     install -vm644 "$SOURCE_DIR/group" etc/group
     install -vm644 "$SOURCE_DIR/resolv.conf" etc/resolv.conf
