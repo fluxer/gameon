@@ -3,11 +3,11 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/x/x7font.html
 
 version=1.20.6
-release=1
+release=2
 description="X.Org fonts"
 depends=('fontconfig' 'xorg-applications' 'xcursor-themes')
-sources=("http://xorg.freedesktop.org/releases/individual/font/font-util-1.3.1.tar.bz2"
-        "http://xorg.freedesktop.org/releases/individual/font/encodings-1.0.4.tar.bz2"
+sources=("http://xorg.freedesktop.org/releases/individual/font/font-util-1.3.2.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/font/encodings-1.0.5.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-adobe-75dpi-1.0.3.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-adobe-utopia-75dpi-1.0.4.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-adobe-utopia-type1-1.0.4.tar.bz2"
@@ -30,8 +30,8 @@ sources=("http://xorg.freedesktop.org/releases/individual/font/font-util-1.3.1.t
         "http://xorg.freedesktop.org/releases/individual/font/font-misc-cyrillic-1.0.3.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-misc-ethiopic-1.0.3.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-misc-meltho-1.0.3.tar.bz2"
-        "http://xorg.freedesktop.org/releases/individual/font/font-mutt-misc-1.0.3.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-misc-misc-1.1.2.tar.bz2"
+        "http://xorg.freedesktop.org/releases/individual/font/font-mutt-misc-1.0.3.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-schumacher-misc-1.1.2.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-screen-cyrillic-1.0.4.tar.bz2"
         "http://xorg.freedesktop.org/releases/individual/font/font-sony-misc-1.0.3.tar.bz2"
@@ -43,7 +43,7 @@ src_compile() {
     # bootstrapping requires local installation
     if [ ! -d "/var/local/spm/xorg-fonts" ];then
         echo "Installing font-util (local)..."
-        cd "$SOURCE_DIR/font-util-1.3.1"
+        cd "$SOURCE_DIR/font-util-1.3.2"
         ./configure --prefix=/usr \
             --sysconfdir=/etc \
             --localstatedir=/var \
