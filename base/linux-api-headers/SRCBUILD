@@ -6,7 +6,7 @@ release=1
 version=5.4.19
 description="Kernel headers sanitized for use in userspace"
 makedepends=('busybox')
-sources=("https://www.kernel.org/pub/linux/kernel/v4.x/linux-$version.tar.xz")
+sources=("https://www.kernel.org/pub/linux/kernel/v5.x/linux-$version.tar.xz")
 
 src_compile() {
     cd "$SOURCE_DIR/linux-$version"
