@@ -3,10 +3,10 @@
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/expat.html
 
 release=1
-version=2.2.6
+version=2.2.9
 description="XML parser library written in C"
 depends=('musl')
-sources=("http://downloads.sf.net/expat/expat-$version.tar.bz2")
+sources=("http://downloads.sf.net/expat/expat-$version.tar.xz")
 
 src_compile() {
     cd "$SOURCE_DIR/expat-$version"
