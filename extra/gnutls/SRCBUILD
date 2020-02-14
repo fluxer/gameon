@@ -2,7 +2,7 @@
 
 # http://www.linuxfromscratch.org/blfs/view/svn/postlfs/gnutls.html
 
-version=3.6.10
+version=3.6.12
 release=1
 description="A library which provides a secure layer over a reliable transport layer"
 depends=('gcc' 'readline' 'zlib' 'nettle')
