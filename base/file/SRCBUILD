@@ -3,7 +3,7 @@
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/file.html
 
 release=1
-version=5.37
+version=5.38
 description="File type identification utility"
 depends=('zlib' 'musl')
 sources=("ftp://ftp.astron.com/pub/file/file-$version.tar.gz")
