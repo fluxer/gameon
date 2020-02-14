@@ -29,6 +29,7 @@ linux
 linux-api-headers
 m4
 make
+mkinitfs
 mpc
 mpfr
 musl
