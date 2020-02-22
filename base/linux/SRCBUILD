@@ -1,7 +1,7 @@
 # Maintainer: Ivailo Monev <xakepa10@gmail.com>
 
 release=1
-version=5.4.19
+version=5.4.21
 description="Linux Kernel and modules"
 makedepends=('busybox')
 sources=("https://www.kernel.org/pub/linux/kernel/v4.x/linux-$version.tar.xz"
