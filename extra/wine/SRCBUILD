@@ -1,12 +1,12 @@
 # Maintainer: Ivailo Monev <xakepa10@gmail.com>
 
-version=4.21
+version=5.2
 release=1
 description="A compatibility layer for running Windows programs"
 depends=('fontconfig' 'xorg-libraries' 'freetype2' 'mesa' 'glu'
-        'gnutls' 'libpng')
+        'gnutls' 'libpng' 'alsa-lib')
 makedepends=('xorg-protocols') # 'openldap'
-sources=("https://dl.winehq.org/wine/source/4.x/wine-$version.tar.xz"
+sources=("https://dl.winehq.org/wine/source/5.x/wine-$version.tar.xz"
         'wine-dlclose-bug41703.patch'
         '30-win32-aliases.conf')
 
@@ -29,8 +29,8 @@ src_compile() {
     [ "$(uname -m)" = "x86_64" ] && _options="--enable-win64"
     ./configure --prefix=/usr \
         --with-x \
+        --with-alsa \
         --without-curses \
-        --without-alsa \
         --without-gstreamer \
         --without-gettext \
         --without-pthread \

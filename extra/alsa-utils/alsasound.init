@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. /etc/rc.common
+
+case "$1" in
+    start)
+        msg "Restoring ALSA state"
+        cmd alsactl restore ;;
+    stop)
+        msg "Saving ALSA state"
+        cmd alsactl store ;;
+esac

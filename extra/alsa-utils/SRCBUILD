@@ -1,0 +1,34 @@
+# Maintainer: Ivailo Monev <xakepa10@gmail.com>
+
+# http://www.linuxfromscratch.org/blfs/view/svn/multimedia/alsa-utils.html
+
+version=1.1.9
+description="Extra ALSA utilities"
+depends=('alsa-lib' 'curses' 'busybox')
+sources=("ftp://ftp.alsa-project.org/pub/utils/alsa-utils-$version.tar.bz2"
+        '90alsa' 'alsasound.init')
+
+src_compile() {
+    cd "$SOURCE_DIR/alsa-utils-$version"
+
+    ./configure --prefix=/usr \
+        --disable-alsaconf \
+        --with-udev-rules-dir=/lib/udev/rules.d \
+        --disable-nls \
+        --disable-rpath
+    make
+}
+
+src_install() {
+    cd "$SOURCE_DIR/alsa-utils-$version"
+
+    make DESTDIR="$INSTALL_DIR" install
+
+    install -vDm755 "$SOURCE_DIR/90alsa" "$INSTALL_DIR/etc/pm/sleep.d/90alsa"
+
+    # dir where to save ALSA state
+    install -vd "$INSTALL_DIR/var/lib/alsa"
+
+    # install init script
+    install -vDm744 "$SOURCE_DIR/alsasound.init" "$INSTALL_DIR/etc/init.d/alsasound"
+}
