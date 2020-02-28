@@ -2,7 +2,7 @@
 
 # http://www.linuxfromscratch.org/blfs/view/svn/x/x7app.html
 
-version=1.20.6
+version=1.20.7
 release=1
 description="X.Org misc tools and utilities"
 depends=('libpng' 'mesa' 'xcb-utils' 'xbitmaps' 'xorg-libraries')
